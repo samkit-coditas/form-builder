@@ -1,0 +1,33 @@
+@import "../../styles/custom-form.scss";
+.custom-form-container {
+  // Apply the custom form styling to the form component
+  .form {
+    @extend .form-group;
+
+    .form-control {
+      @extend .form-control;
+    }
+
+    .react-select__control {
+      @extend .react-select__control;
+    }
+
+    .form-check {
+      @extend .form-check;
+    }
+
+    .btn-group {
+      @extend .btn-group;
+      .active {
+        background-color: #ccc;
+      }
+    }
+
+    .button {
+      @extend .button;
+    }
+    .error {
+      color: red;
+    }
+  }
+}
