@@ -18,12 +18,25 @@ interface FormProps {
   schema: any;
 }
 
+const defaultValuesMap: any = {
+  text: "",
+  select: null,
+  checkbox: false,
+  "button-group": "",
+  textarea: "",
+};
 const CustomForm: React.FC<FormProps> = ({ fields, onSubmit, schema }) => {
+  const getDefaultValues: any = () => {
+    return fields.reduce((accc, curr) => {
+      return { ...accc, [curr.name]: defaultValuesMap[curr.type] };
+    }, {});
+  };
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
+    // defaultValues: getDefaultValues(),
     resolver: yupResolver(schema),
     mode: "onChange",
     reValidateMode: "onChange",

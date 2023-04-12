@@ -3,55 +3,70 @@ import CustomForm from "@/components/customForm";
 import * as yup from "yup";
 
 export default function Home() {
-  const schema = yup.object().shape(
-    {
-      firstName: yup
-        .string()
-        .trim()
-        .required("This field is required")
-        .matches(
-          /^([^0-9]*)$/g,
-          "Numbers not allowed. Please enter a valid name"
-        ),
-      lastName: yup
-        .string()
-        .trim()
-        .required("This field is required")
-        .matches(
-          /^([^0-9]*)$/g,
-          "Numbers not allowed. Please enter a valid name"
-        ),
-      userType: yup.string().required("This field is required"),
-      country: yup.object().required("This field is required"),
-      requestType: yup.string().required("This field is required"),
-      email: yup
-        .string()
-        .email("Invalid email address")
-        .when(["phone"], (phone, schema) => {
-          return phone[0]
-            ? schema
-            : schema.required("Email or Phone is required");
-        }),
-      phone: yup
-        .string()
-        .matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, "Invalid phone number")
-        .when(["email"], (email, schema) => {
-          return email[0]
-            ? schema
-            : schema.required("Email or Phone is required");
-        }),
-      requestDetails: yup
-        .string()
-        .trim()
-        .required("This field is required")
-        .max(5000),
-      termsAggred: yup
-        .boolean()
-        .oneOf([true], "You must agree to the terms and conditions")
-        .required("This field is required"),
-    },
-    [["phone", "email"]]
-  );
+  const schema = yup.object().shape({
+    firstName: yup
+      .string()
+      .trim()
+      .required("This field is required")
+      .matches(
+        /^([^0-9]*)$/g,
+        "Numbers not allowed. Please enter a valid name"
+      ),
+    lastName: yup
+      .string()
+      .trim()
+      .required("This field is required")
+      .matches(
+        /^([^0-9]*)$/g,
+        "Numbers not allowed. Please enter a valid name"
+      ),
+    userType: yup.string().required("This field is required"),
+    country: yup.object().required("This field is required"),
+    requestType: yup.string().required("This field is required"),
+    email: yup
+      .string()
+      .email("Invalid email address")
+      .test(
+        "either-or",
+        "Email or Phone is required",
+        function (value, context) {
+          if (!value && !context.parent.phone) {
+            return false;
+          }
+          return true;
+        }
+      ),
+    phone: yup
+      .string()
+      .transform((value) => {
+        if (!value) {
+          return null;
+        } else {
+          return value;
+        }
+      })
+      .nullable()
+      .matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, "Invalid phone number")
+      .test(
+        "either-or",
+        "Email or Phone is required",
+        function (value, context) {
+          if (!value && !context.parent.email) {
+            return false;
+          }
+          return true;
+        }
+      ),
+    requestDetails: yup
+      .string()
+      .trim()
+      .required("This field is required")
+      .max(5000),
+    termsAggred: yup
+      .boolean()
+      .oneOf([true], "You must agree to the terms and conditions")
+      .required("This field is required"),
+  });
 
   const fields = [
     {
